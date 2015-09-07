@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">appiplus</string>
+    <string name="title_appointment_detail">Appointment Detail</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="termin">Termin</string>
+    <string name="what">Was</string>
+    <string name="who">Wer</string>
+    <string name="where">Wo</string>
+    <string name="description">Beschreibung</string>
+    <string name="action_comment">Kommentar hinzufügen</string>
+    <string name="title_overview">Übersicht</string>
+    <string name="title_activity_add_comment">Neuer Kommentar</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="edit_message">Kommentar</string>
+    <string name="button_send">Senden</string>
+    <string name="when">Wann</string>
+    <string name="sync_appointments_on">Sync Kalender einschalten</string>
+    <string name="sync_appointments_off">Sync Kalender ausschalten</string>
+    <string name="hours">Std</string>
+    <string name="app_name_appointments">AppiPlus - Termine</string>
+    <string name="app_name_detail">Detail</string>
+    <string name="app_name_comment">Kommentar</string>
+    <string name="appointments_loading">Termine werden geladen</string>
+    <string name="comments_loading">Kommentare werden geladen</string>
+    <string name="add_comment">Bitte Kommentar eingeben</string>
+    <string name="search_location">Ort suchen</string>
+    <string name="no_map_found">Keine installierte Maps Applikation gefunden</string>
+    <string name="warning">Warnung</string>
+    <string name="action_sync_to_calendar">Termin in Kalender übernehmen</string>
+    <string name="no_calendar_found">Keinen Kalendar für Synchronisierung gefunden</string>
+    <string name="appointment_created">Termin wurde in den Kalender eingetragen</string>
+    <string name="note">Hinweis</string>
+    <string name="notification">Nachricht von AppiPlus</string>
+    <string name="title_activity_choose_calendar">Kalenderauswahl</string>
+    <string name="choose_calendar">Kalenderauswahl</string>
+    <string name="main_calendar">Hauptkalender</string>
+    <string name="sign_out">Abmelden</string>
+    <string name="insert_comment">Kommentar wird gesendet</string>
+    <string name="empty_comment">Bitte geben Sie einen Text ein</string>
+</resources>

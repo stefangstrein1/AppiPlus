@@ -1,0 +1,12 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="HomeIconStyle" parent="Theme.AppCompat.Light">
+        <item name="android:background">@drawable/ic_launcher</item>
+        <item name="android:paddingRight">12dp</item>
+    </style>
+</resources>

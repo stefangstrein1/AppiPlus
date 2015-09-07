@@ -1,0 +1,29 @@
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/appointment_list"
+        android:name="com.web_crossing.www.appiplus.AppointmentListFragment"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        tools:context=".AppointmentListActivity" tools:layout="@android:layout/list_content">
+    </fragment>
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/basecolor">
+        <!--<TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="This is a Test" />-->
+        <ImageView
+            android:padding="5dp"
+            android:id="@+id/banner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</RelativeLayout>
+
