@@ -122,8 +122,12 @@ public class AppointmentDetailActivity extends AppCompatActivity {
             String city = "";
 
             try{
+                if(appointment.getAddress() == "" || appointment.getCity() == ""){
+                    return true;
+                }
                 address = URLEncoder.encode(appointment.getAddress(), "utf-8");
                 city = URLEncoder.encode(appointment.getCity(), "utf-8");
+
             }
             catch(Exception e){
                 createAndShowDialog(e, getResources().getString(R.string.warning));
