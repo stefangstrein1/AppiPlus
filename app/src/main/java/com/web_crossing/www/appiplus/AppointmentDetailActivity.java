@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 
@@ -111,7 +112,7 @@ public class AppointmentDetailActivity extends AppCompatActivity {
             Intent commentIntent = new Intent(this, AddComment.class);
             //detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, appointment);
 
-            commentIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, fragment.getCurrentAppointment());
+            commentIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, (Parcelable)fragment.getCurrentAppointment());
             startActivity(commentIntent);
 
             return true;
@@ -183,7 +184,8 @@ public class AppointmentDetailActivity extends AppCompatActivity {
             Map calEntries = MyUtils.getStoredAppointments(this);
             long eventId = -1;
             if(calEntries.get(appointment.getId()) != null){
-                eventId = (long)calEntries.get(appointment.getId());
+                MemberAppointments tmpappointment = (MemberAppointments)calEntries.get(appointment.getId());
+                eventId = tmpappointment.getEventId();
             }
 
             Cursor cursor = null;
@@ -205,7 +207,8 @@ public class AppointmentDetailActivity extends AppCompatActivity {
                         appointment.end.getTime(),
                         tmpCalendarPrimaryId);
 
-                calEntries.put(appointment.getId(), eventID);
+                appointment.setEventid(eventID);
+                calEntries.put(appointment.getId(), appointment);
             }
             else {
                 if (cursor.moveToFirst()) {
@@ -215,9 +218,9 @@ public class AppointmentDetailActivity extends AppCompatActivity {
                             eventId,
                             getResources().getString(R.string.where),
                             tmpCalendarPrimaryId);
-                    if(eventID != -1){
-                        calEntries.put(appointment.getId(), eventID);
-                    }
+
+                    appointment.setEventid(eventID);
+                    calEntries.put(appointment.getId(), appointment);
                 }
             }
 

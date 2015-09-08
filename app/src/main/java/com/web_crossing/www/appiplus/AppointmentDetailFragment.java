@@ -29,6 +29,7 @@ import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -141,6 +142,19 @@ public class AppointmentDetailFragment extends Fragment {
         else if(savedInstanceState != null){
             mItem = savedInstanceState.getParcelable(PREVIOUS_APPOINTMENT);
         }
+
+        Map calEntries = MyUtils.getStoredAppointments(getActivity());
+        if(calEntries.get(mItem.getId()) != null){
+            MemberAppointments appointment = (MemberAppointments)calEntries.get(mItem.getId());
+            long eventId = appointment.getEventId();
+            if(eventId != -1){
+                mItem.setEventid(eventId);
+                calEntries.put(mItem.getId(), mItem);
+            }
+
+            MyUtils.setStoredAppointments(calEntries, getActivity());
+        }
+
     }
 
     @Override

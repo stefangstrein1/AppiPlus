@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.web_crossing.www.appiplus.R;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,7 +16,7 @@ import java.util.Date;
  * <p/>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class MemberAppointments implements Parcelable {
+public class MemberAppointments implements Parcelable, Serializable {
 
     /**
      * Item text
@@ -54,6 +55,16 @@ public class MemberAppointments implements Parcelable {
     @com.google.gson.annotations.SerializedName("__deleted")
     private boolean __deleted;
 
+    private boolean dataChanged;
+
+    public void setDataChanged(boolean value){
+        dataChanged = value;
+    }
+
+    public boolean getDataChanged(){
+        return dataChanged;
+    }
+
     public Date start;
 
     public Date end;
@@ -87,6 +98,17 @@ public class MemberAppointments implements Parcelable {
     public boolean is__deleted(){
         return __deleted;
     }
+
+    private long eventId;
+
+    public long getEventId(){
+        return eventId;
+    }
+
+    public void setEventid(long u_eventId){
+        eventId = u_eventId;
+    }
+
     public String getZip() { return zip; }
     /**
      * Returns the item text

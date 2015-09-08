@@ -26,9 +26,11 @@ import com.microsoft.windowsazure.mobileservices.http.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 
 import java.io.File;
+import java.lang.reflect.Member;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.Display;
@@ -438,7 +441,7 @@ public class AppointmentListActivity extends AppCompatActivity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, AppointmentDetailActivity.class);
             //detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, appointment);
-            detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, appointment);
+            detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, (Parcelable)appointment);
             startActivity(detailIntent);
         }
     }
@@ -487,6 +490,28 @@ public class AppointmentListActivity extends AppCompatActivity
 
         final String calendarPrimaryId = tmpCalendarPrimaryId;
 
+        AppointmentListFragment tmpFragment = ((AppointmentListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.appointment_list));
+
+        if(tmpFragment == null || tmpFragment.getAdapter() == null){
+            return;
+        }
+
+        ArrayAdapter<MemberAppointments> tmpadapter = tmpFragment.getAdapter();
+
+        tmpadapter.clear();
+        //DataContent.ClearData();
+        Map tmpcalEntries = MyUtils.getStoredAppointments(currentActivity);
+
+        Iterator it = tmpcalEntries.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
+            tmpadapter.add((MemberAppointments)pair.getValue());
+        }
+
+        tmpadapter.notifyDataSetChanged();
+
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params) {
@@ -509,25 +534,18 @@ public class AppointmentListActivity extends AppCompatActivity
 
                             ArrayAdapter<MemberAppointments> adapter = fragment.getAdapter();
 
-                            adapter.clear();
                             //DataContent.ClearData();
+                            Map calEntries = MyUtils.getStoredAppointments(currentActivity);
+
+                            adapter.clear();
 
                             Cursor cur = null;
                             ContentResolver cr = getContentResolver();
 
                             //SharedPreferences calEntries = getSharedPreferences(CALENDARENTRIES, 0);
 
-                            Map calEntries = MyUtils.getStoredAppointments(currentActivity);
-
                             for (MemberAppointments item : results) {
                                 //DataContent.addAppointment(item);
-                                if(item.is__deleted() == false){
-                                    adapter.add(item);
-                                }
-
-                                if(!sync){
-                                    continue;
-                                }
 
                                 ContentValues eventValues = new ContentValues();
 
@@ -537,9 +555,26 @@ public class AppointmentListActivity extends AppCompatActivity
                                     continue;
                                 }
 
+                                item.setDataChanged(false);
+
                                 long eventId = -1;
                                 if(calEntries.get(item.getId()) != null){
-                                    eventId = (long)calEntries.get(item.getId());
+                                    MemberAppointments appointment = (MemberAppointments)calEntries.get(item.getId());
+                                    eventId = appointment.getEventId();
+
+                                    if(item.start.compareTo(appointment.start) != 0 ||
+                                            item.end.compareTo(appointment.end) != 0){
+
+                                        item.setDataChanged(true);
+                                    }
+                                }
+
+                                if(item.is__deleted() == false){
+                                    adapter.add(item);
+                                }
+
+                                if(!sync){
+                                    continue;
                                 }
 
                                 Cursor cursor = null;
@@ -561,17 +596,20 @@ public class AppointmentListActivity extends AppCompatActivity
                                             item.end.getTime(),
                                             calendarPrimaryId);
 
-                                    calEntries.put(item.getId(), eventID);
+                                    item.setEventid(eventID);
+                                    calEntries.put(item.getId(), item);
                                 }
                                 else if(eventId >= 0 && item.is__deleted() == true) {
                                     // delete event from calendar
                                     int count = MyUtils.deleteEvent(getContentResolver(), eventId);
+                                    calEntries.remove(item.getId());
                                 }
                                 else if(eventId >= 0 && item.is__deleted() == false){
                                     if (cursor.moveToFirst()) {
                                         long tmpEventId = MyUtils.UpdateEvent(getContentResolver(),item, cursor, eventId,getResources().getString(R.string.where),calendarPrimaryId);
                                         if(tmpEventId != -1){
-                                            calEntries.put(item.getId(), tmpEventId);
+                                            item.setEventid(tmpEventId);
+                                            calEntries.put(item.getId(), item);
                                         }
                                     }
                                 }

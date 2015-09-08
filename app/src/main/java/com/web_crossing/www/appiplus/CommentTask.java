@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.web_crossing.www.appiplus.Models.AppointmentComments;
@@ -45,7 +46,7 @@ public class CommentTask extends AsyncTask<Void, Void, String> {
 
         if(result == "OK"){
             Intent detailIntent = new Intent(this.parent, AppointmentDetailActivity.class);
-            detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, appointment);
+            detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, (Parcelable)appointment);
 
             this.parent.startActivity(detailIntent);
 

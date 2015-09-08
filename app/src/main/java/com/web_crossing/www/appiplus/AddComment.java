@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.web_crossing.www.appiplus.Models.AppointmentComments;
 import com.web_crossing.www.appiplus.Models.MemberAppointments;
 
+import java.lang.reflect.Member;
 import java.net.MalformedURLException;
 import java.util.UUID;
 
@@ -91,7 +93,7 @@ public class AddComment extends ActionBarActivity {
             //
 
             Intent detailIntent = new Intent(this, AppointmentDetailActivity.class);
-            detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, mItem);
+            detailIntent.putExtra(AppointmentDetailFragment.ARG_MEMBER_APPOINTMENT, (Parcelable)mItem);
 
             navigateUpTo(detailIntent);
             return true;

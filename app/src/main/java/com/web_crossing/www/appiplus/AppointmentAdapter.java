@@ -61,9 +61,17 @@ public class AppointmentAdapter extends ArrayAdapter<MemberAppointments> {
             holder.appointment_subtitle = (TextView) convertView.findViewById(R.id.appointment_subtitle);
             holder.appointment_description = (TextView) convertView.findViewById(R.id.appointment_description);
             holder.club_logo = (ImageView) convertView.findViewById(R.id.club_logo);
+            holder.appointment_changed = (TextView) convertView.findViewById(R.id.appointment_changed);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
+        }
+
+        if(currentItem.getDataChanged()){
+            holder.appointment_changed.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.appointment_changed.setVisibility(View.INVISIBLE);
         }
 
         holder.appointment_title.setText(currentItem.getTitle());
@@ -94,5 +102,6 @@ public class AppointmentAdapter extends ArrayAdapter<MemberAppointments> {
         TextView appointment_subtitle;
         TextView appointment_description;
         ImageView club_logo;
+        TextView appointment_changed;
     }
 }
