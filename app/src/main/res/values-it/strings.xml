@@ -40,4 +40,6 @@
     <string name="sign_out">uscire</string>
     <string name="insert_comment">commento viene inviato</string>
     <string name="empty_comment">prego inserire un testo</string>
+    <string name="trigger_sync">Sync</string>
+    <string name="to_the_portal">Zum Portal</string>
 </resources>

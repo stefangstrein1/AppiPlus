@@ -3,6 +3,9 @@ package com.web_crossing.www.appiplus;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -149,8 +152,10 @@ public class AppointmentDetailFragment extends Fragment {
             long eventId = appointment.getEventId();
             if(eventId != -1){
                 mItem.setEventid(eventId);
-                calEntries.put(mItem.getId(), mItem);
             }
+
+            mItem.numcomments_old = mItem.numcomments;
+            calEntries.put(mItem.getId(), mItem);
 
             MyUtils.setStoredAppointments(calEntries, getActivity());
         }
@@ -179,6 +184,30 @@ public class AppointmentDetailFragment extends Fragment {
             if(mClient == null){
                 // Create the Mobile Service Client instance, using the provided
                 // Mobile Service URL and key
+            }
+
+            boolean connected = false;
+            connected = MyUtils.getNetworkState(getActivity());
+            /*ConnectivityManager connectivityManager = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                //we are connected to a network
+                connected = true;
+            } else {
+                connected = false;
+            }*/
+
+            if(connected == false){
+                ListView lstComments = (ListView)rootView.findViewById(R.id.listComments);
+                headerView.setPadding(0, 12, 0, 8);
+                lstComments.addHeaderView(headerView);
+                mAdapter = new CommentsAdapter(
+                        getActivity(),
+                        android.R.id.text2);
+
+                lstComments.setAdapter(mAdapter);
+
+                return rootView;
             }
 
             final String clubId = mItem.getClubid();

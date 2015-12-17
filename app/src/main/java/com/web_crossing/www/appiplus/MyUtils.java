@@ -7,6 +7,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.CalendarContract;
@@ -86,7 +88,9 @@ public class MyUtils {
                 CalendarContract.Events.EVENT_LOCATION,
                 CalendarContract.Events.TITLE,
                 CalendarContract.Events.DESCRIPTION,
-                CalendarContract.Events.CALENDAR_ID};
+                CalendarContract.Events.CALENDAR_ID,
+                CalendarContract.Events.CUSTOM_APP_PACKAGE,
+                CalendarContract.Events.CUSTOM_APP_URI};
 
         Cursor cursor = contentResolver.
                 query(
@@ -95,6 +99,22 @@ public class MyUtils {
                         CalendarContract.Events._ID + " = ? ",
                         new String[]{Long.toString(eventId)},
                         null);
+
+        return cursor;
+    }
+
+    public static Cursor getEvent(ContentResolver contentResolver,
+                                  MemberAppointments item){
+
+        String[] proj = new String[]{
+                CalendarContract.Events._ID};
+
+        Cursor cursor = contentResolver.query(
+                CalendarContract.Events.CONTENT_URI,
+                proj,
+                CalendarContract.Events.TITLE + " = ? OR " + CalendarContract.Events.DTSTART + " = ? OR " + CalendarContract.Events.DTEND + " = ?",
+                new String[]{item.getTitle(), Long.toString(item.getStart().getTime()), Long.toString(item.getEnd().getTime())},
+                null);
 
         return cursor;
     }
@@ -224,7 +244,7 @@ public class MyUtils {
     }
 
     public static void setStoredAppointments(Map appointments, Activity activity){
-        File appointmentFile = getStorageFile("appointments", true, activity);
+        File appointmentFile = getStorageFile("appointmentsCache", true, activity);
 
         if(appointmentFile == null){
             return;
@@ -250,7 +270,7 @@ public class MyUtils {
     }
 
     public static Map getStoredAppointments(Activity activity){
-        File appointments = getStorageFile("appointments", true, activity);
+        File appointments = getStorageFile("appointmentsCache", true, activity);
         if(appointments == null){
             return null;
         }
@@ -350,8 +370,42 @@ public class MyUtils {
         {
             return "-";
         }
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
         return df.format(date);
+    }
+
+    public static boolean getNetworkState(Context pContext)
+    {
+        ConnectivityManager connect = null;
+        connect =  (ConnectivityManager)pContext.getSystemService(pContext.CONNECTIVITY_SERVICE);
+
+        if(connect != null)
+        {
+            NetworkInfo resultMobile = connect.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            boolean mobileConnected = false;
+
+            if(resultMobile != null){
+                mobileConnected = resultMobile.isConnectedOrConnecting();
+            }
+
+            NetworkInfo resultWifi = connect.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            boolean wifiConnected = false;
+
+            if(resultWifi != null){
+                wifiConnected = resultWifi.isConnectedOrConnecting();
+            }
+
+            if (mobileConnected || wifiConnected)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+            return false;
     }
 }

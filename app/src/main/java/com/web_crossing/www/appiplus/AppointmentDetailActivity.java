@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,6 +78,8 @@ public class AppointmentDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean connected = MyUtils.getNetworkState(this);
+
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
         if(fragments.size() == 0){
@@ -104,6 +108,10 @@ public class AppointmentDetailActivity extends AppCompatActivity {
         }
         else if(id == R.id.action_comment)
         {
+            if(!connected){
+                return true;
+            }
+
             if(appointment == null){
                 navigateUpTo(new Intent(this, AppointmentListActivity.class));
                 return true;

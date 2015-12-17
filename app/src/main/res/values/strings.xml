@@ -40,4 +40,7 @@
     <string name="sign_out">Sign out</string>
     <string name="insert_comment">Inserting comment</string>
     <string name="empty_comment">Please enter a text</string>
+    <string name="title_activity_handle_event">HandleEvent</string>
+    <string name="trigger_sync">Sync</string>
+    <string name="to_the_portal">To the website</string>
 </resources>

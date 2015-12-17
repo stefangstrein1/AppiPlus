@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -107,6 +109,13 @@ public class AddComment extends ActionBarActivity {
     }
 
     public void addComment(View view) {
+        boolean connected = MyUtils.getNetworkState(this);
+
+        if(connected == false){
+            navigateUpTo(new Intent(this, AppointmentListActivity.class));
+            return;
+        }
+
         //Intent intent = new Intent(this, DisplayMessageActivity.class);
         EditText editText = (EditText) findViewById(R.id.edit_message);
         String message = editText.getText().toString();

@@ -18,6 +18,8 @@ import java.util.Date;
  */
 public class MemberAppointments implements Parcelable, Serializable {
 
+    private static final long serialVersionUID = -1957051710103212127L;
+
     /**
      * Item text
      */
@@ -70,6 +72,13 @@ public class MemberAppointments implements Parcelable, Serializable {
     public Date end;
 
     public String clubname;
+
+    public Integer numcomments;
+
+    public Integer numcomments_old;
+
+    //public Integer numcomments;
+    //public Integer numcomments;
     /**
      * ToDoItem constructor
      */
@@ -136,7 +145,7 @@ public class MemberAppointments implements Parcelable, Serializable {
 
     public String getClubid() { return clubid; }
 
-    DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     public Date getStart(){
         return start;
@@ -164,9 +173,12 @@ public class MemberAppointments implements Parcelable, Serializable {
         }
         return result;
     }
+
     public String getDescription(){
         return description;
     }
+
+    //public void setDescription (String u_description) { description = u_description; }
 
     public String getCalendarDescription(String where){
         String calDescription = where + ": " + clubname;
@@ -216,6 +228,8 @@ public class MemberAppointments implements Parcelable, Serializable {
         clubname = in.readString();
         location = in.readString();
         __deleted = in.readByte() != 0;
+        numcomments = in.readInt();
+        numcomments_old = in.readInt();
     }
 
     @Override
@@ -238,6 +252,8 @@ public class MemberAppointments implements Parcelable, Serializable {
         dest.writeString(clubname);
         dest.writeString(location);
         dest.writeByte((byte)(__deleted ? 1 : 0));
+        dest.writeInt(numcomments);
+        dest.writeInt(numcomments_old);
     }
 
     @SuppressWarnings("unused")

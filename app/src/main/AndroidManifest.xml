@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.web_crossing.www.appiplus">
+    package="com.web_crossing.www.appiplus" >
 
-    <uses-sdk android:minSdkVersion="16" />
+    <uses-sdk android:minSdkVersion="17" />
 
     <permission
         android:name="appiplus.permission.C2D_MESSAGE"
@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <android:uses-permission
@@ -71,7 +72,7 @@
         <activity
             android:name=".ChooseCalendar"
             android:label="@string/title_activity_choose_calendar"
-            android:parentActivityName=".AppointmentListActivity">
+            android:parentActivityName=".AppointmentListActivity" >
         </activity>
     </application>
 

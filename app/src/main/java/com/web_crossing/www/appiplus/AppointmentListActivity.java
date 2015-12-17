@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.app.AlertDialog;
@@ -26,10 +27,10 @@ import com.microsoft.windowsazure.mobileservices.http.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 
 import java.io.File;
-import java.lang.reflect.Member;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -321,6 +322,7 @@ public class AppointmentListActivity extends AppCompatActivity
      */
     private boolean mTwoPane;
 
+    public String mNotificationAppointmentId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -329,6 +331,8 @@ public class AppointmentListActivity extends AppCompatActivity
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo);
+
+        mNotificationAppointmentId = getIntent().getStringExtra("notificationAppointmentId");
 
     /*    ImageView banner = (ImageView)findViewById(R.id.banner);*/
         Display display = getWindowManager().getDefaultDisplay();
@@ -512,124 +516,20 @@ public class AppointmentListActivity extends AppCompatActivity
 
         tmpadapter.notifyDataSetChanged();
 
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                            /*mAppointmentTable.where().field("complete").
-                                    eq(val(false)).execute().get();
-                    */
+        AppointmentListFragment taskFragment = ((AppointmentListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.appointment_list));
 
-                    //final List<Appointments> results = mAppointmentTable.execute().get();
-                    final MobileServiceList<MemberAppointments> results = mAppointmentTable.execute().get();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            AppointmentListFragment fragment = ((AppointmentListFragment) getSupportFragmentManager()
-                                    .findFragmentById(R.id.appointment_list));
+        LoadingTask task = new LoadingTask(this,
+                mAppointmentTable,
+                mNotificationAppointmentId,
+                calendarPrimaryId,
+                progress,
+                sync,
+                getContentResolver(),
+                taskFragment,
+                getResources());
 
-                            if(fragment == null || fragment.getAdapter() == null){
-                                return;
-                            }
-
-                            ArrayAdapter<MemberAppointments> adapter = fragment.getAdapter();
-
-                            //DataContent.ClearData();
-                            Map calEntries = MyUtils.getStoredAppointments(currentActivity);
-
-                            adapter.clear();
-
-                            Cursor cur = null;
-                            ContentResolver cr = getContentResolver();
-
-                            //SharedPreferences calEntries = getSharedPreferences(CALENDARENTRIES, 0);
-
-                            for (MemberAppointments item : results) {
-                                //DataContent.addAppointment(item);
-
-                                ContentValues eventValues = new ContentValues();
-
-                                //long eventId = calEntries.getLong(item.getId(), -1);
-
-                                if(calEntries == null){
-                                    continue;
-                                }
-
-                                item.setDataChanged(false);
-
-                                long eventId = -1;
-                                if(calEntries.get(item.getId()) != null){
-                                    MemberAppointments appointment = (MemberAppointments)calEntries.get(item.getId());
-                                    eventId = appointment.getEventId();
-
-                                    if(item.start.compareTo(appointment.start) != 0 ||
-                                            item.end.compareTo(appointment.end) != 0){
-
-                                        item.setDataChanged(true);
-                                    }
-                                }
-
-                                if(item.is__deleted() == false){
-                                    adapter.add(item);
-                                }
-
-                                if(!sync){
-                                    continue;
-                                }
-
-                                Cursor cursor = null;
-                                if(eventId != -1){
-                                    cursor = MyUtils.getEvent(getContentResolver(), eventId);
-                                    if(!cursor.moveToFirst()){
-                                        // shared prefrence has key stored but event has been deleted
-                                        calEntries.remove(item.getId());
-                                        eventId = -1;
-                                    }
-                                }
-
-                                if(eventId == -1 && item.is__deleted() == false) {
-                                    long eventID = MyUtils.createEvent(getContentResolver(),
-                                            item.getTitle(),
-                                            item.getCalendarDescription(getResources().getString(R.string.where)),
-                                            item.getCalendarAddress(),
-                                            item.start.getTime(),
-                                            item.end.getTime(),
-                                            calendarPrimaryId);
-
-                                    item.setEventid(eventID);
-                                    calEntries.put(item.getId(), item);
-                                }
-                                else if(eventId >= 0 && item.is__deleted() == true) {
-                                    // delete event from calendar
-                                    int count = MyUtils.deleteEvent(getContentResolver(), eventId);
-                                    calEntries.remove(item.getId());
-                                }
-                                else if(eventId >= 0 && item.is__deleted() == false){
-                                    if (cursor.moveToFirst()) {
-                                        long tmpEventId = MyUtils.UpdateEvent(getContentResolver(),item, cursor, eventId,getResources().getString(R.string.where),calendarPrimaryId);
-                                        if(tmpEventId != -1){
-                                            item.setEventid(tmpEventId);
-                                            calEntries.put(item.getId(), item);
-                                        }
-                                    }
-                                }
-                            }
-
-                            MyUtils.setStoredAppointments(calEntries, currentActivity);
-
-                            progress.dismiss();
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
-                } catch (Exception e){
-                    progress.dismiss();
-                    createAndShowDialog(e, "Error");
-                }
-
-                return null;
-            }
-        }.execute();
-
+        task.execute();
     }
 
     /**
@@ -709,7 +609,15 @@ public class AppointmentListActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.sync_appointments) {
+        if (id == R.id.trigger_sync){
+            refreshItemsFromTable();
+        }
+        else if(id == R.id.portal){
+            Uri uriUrl = Uri.parse("http://www.appiplus.com");
+            Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+            startActivity(launchBrowser);
+        }
+        else if (id == R.id.sync_appointments) {
 
             SharedPreferences prefs = getSharedPreferences(SHAREDPREFFILE, Context.MODE_PRIVATE);
             Boolean sync = prefs.getBoolean(SYNCACTIVATED, true);

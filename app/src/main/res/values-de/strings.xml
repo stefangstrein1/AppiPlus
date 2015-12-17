@@ -40,4 +40,6 @@
     <string name="sign_out">Abmelden</string>
     <string name="insert_comment">Kommentar wird gesendet</string>
     <string name="empty_comment">Bitte geben Sie einen Text ein</string>
+    <string name="trigger_sync">Sync</string>
+    <string name="to_the_portal">Zum Portal</string>
 </resources>

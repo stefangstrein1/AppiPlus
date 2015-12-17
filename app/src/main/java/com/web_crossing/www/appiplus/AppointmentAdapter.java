@@ -62,6 +62,7 @@ public class AppointmentAdapter extends ArrayAdapter<MemberAppointments> {
             holder.appointment_description = (TextView) convertView.findViewById(R.id.appointment_description);
             holder.club_logo = (ImageView) convertView.findViewById(R.id.club_logo);
             holder.appointment_changed = (TextView) convertView.findViewById(R.id.appointment_changed);
+            holder.appointment_newcomments = (TextView) convertView.findViewById(R.id.appointment_newcomments);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -89,6 +90,21 @@ public class AppointmentAdapter extends ArrayAdapter<MemberAppointments> {
         diff = diff / (60 * 60 * 1000);
         holder.appointment_subtitle.setText(MyUtils.convertDate(currentItem.getStart()) + " " + diff + " " + hours);
 
+        Integer tmpCount = 0;
+
+        if(currentItem.numcomments != null && currentItem.numcomments_old != null){
+            tmpCount = currentItem.numcomments - currentItem.numcomments_old;
+        }
+
+        if(tmpCount > 0) {
+            holder.appointment_newcomments.setText(tmpCount + " new Comments");
+            holder.appointment_newcomments.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.appointment_newcomments.setText("");
+            holder.appointment_newcomments.setVisibility(View.GONE);
+        }
+
         DownloadImageTask task =  new DownloadImageTask(holder.club_logo);
         String url =  "http://portal.appiplus.com/Uploads/Clubs/%s/logo.png?w=%d&h=%d";
         url = String.format(url, currentItem.getClubid(), 75, 75);
@@ -103,5 +119,6 @@ public class AppointmentAdapter extends ArrayAdapter<MemberAppointments> {
         TextView appointment_description;
         ImageView club_logo;
         TextView appointment_changed;
+        TextView appointment_newcomments;
     }
 }
